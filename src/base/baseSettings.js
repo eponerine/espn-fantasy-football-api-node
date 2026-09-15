@@ -18,6 +18,7 @@ export class BaseSettings {
     this.median_scoring = data.scoringSettings?.scoringEnhancementType === 'WIN_BONUS_TOP_HALF';
     this._raw_scoring_settings = data.scoringSettings || {};
     this._raw_schedule_settings = data.scheduleSettings || {};
+    this._raw_roster_settings = data.rosterSettings || {};
 
     this.faab = data.acquisitionSettings.isUsingAcquisitionBudget;
     this.acquisition_budget = data.acquisitionSettings?.acquisitionBudget || 0;
