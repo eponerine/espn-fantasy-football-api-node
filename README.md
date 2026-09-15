@@ -1,6 +1,6 @@
 # ESPN Fantasy Football API for Node.js
 
-A Node.js port of the [espn-api](https://github.com/cwendt94/espn-api) fantasy football library, with an Express API on top.
+A Node.js port of the Python-based [espn-api](https://github.com/cwendt94/espn-api) fantasy football library, with an Express API on top.
 
 This project turns ESPN's fantasy data into something an application can actually use: league settings become readable roster-slot rules, teams and players become domain objects, and raw matchup, transaction, activity, and scoring data are exposed through stable JSON routes. It is read-only. Nothing here can set a lineup, claim a player, or otherwise mutate a league.
 
