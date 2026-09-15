@@ -24,6 +24,7 @@ export class League extends BaseLeague {
   constructor({ leagueId, year, espnS2 = null, swid = null, debug = false }) {
     super({ leagueId, year, sport: 'nfl', espnS2, swid, debug });
     this.nfl_week = null;
+    this._pro_schedule = null;
   }
 
   static async create({ leagueId, year, espnS2 = null, swid = null, fetchLeague = true, debug = false }) {
@@ -47,8 +48,10 @@ export class League extends BaseLeague {
   }
 
   async _fetchTeams(data) {
-    const proSchedule = await this._getAllProSchedule();
-    await super._fetchTeams(data, Team, proSchedule);
+    if (!this._pro_schedule) {
+      this._pro_schedule = await this._getAllProSchedule();
+    }
+    await super._fetchTeams(data, Team, this._pro_schedule);
 
     for (const team of this.teams) {
       team.division_name = this.settings.division_map[team.division_id] || '';
@@ -114,7 +117,7 @@ export class League extends BaseLeague {
     }
 
     for (const team of this.teams) {
-      team._fetchRoster(teamRoster[team.team_id], this.year);
+      team._fetchRoster(teamRoster[team.team_id], this.year, this._pro_schedule);
     }
   }
 

@@ -25,7 +25,7 @@ function toBoolean(value) {
   return false;
 }
 
-function serializeRosterPlayer(player) {
+function serializeRosterPlayer(player, week) {
   return {
     player_id: player.playerId,
     name: player.name,
@@ -38,7 +38,14 @@ function serializeRosterPlayer(player) {
     injured: player.injured,
     percent_owned: player.percent_owned,
     percent_started: player.percent_started,
-    active_status: player.active_status
+    active_status: player.active_status,
+    projected_points: player.projected_total_points,
+    total_points: player.total_points,
+    avg_points: player.avg_points,
+    projected_avg_points: player.projected_avg_points,
+    pos_rank: player.posRank,
+    acquisition_type: player.acquisitionType,
+    on_bye_week: !Object.prototype.hasOwnProperty.call(player.schedule || {}, String(week))
   };
 }
 
@@ -192,7 +199,7 @@ app.get('/roster', async (req, res) => {
       week,
       team_id: team.team_id,
       team_name: team.team_name,
-      roster: (team.roster || []).map((player) => serializeRosterPlayer(player))
+      roster: (team.roster || []).map((player) => serializeRosterPlayer(player, week))
     });
   } catch (error) {
     res.status(400).json({ error: error.message });

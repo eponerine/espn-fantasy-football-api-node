@@ -70,6 +70,8 @@ Endpoints:
 - `GET /player-info?playerId=3139477` or `GET /player-info?name=Patrick%20Mahomes`
 
 Notes:
+- `/settings` includes raw ESPN roster settings and `lineup_slots` entries with slot eligibility.
+- `/roster` includes season projections/totals, positional rank, acquisition type, and bye-week status for the requested scoring week.
 - `GET /box-scores?week=2&includeLineup=true` includes detailed home and away lineup players.
 - `/box-scores` rejects future weeks and returns `400` if `week` is greater than the league `current_week`.
 

@@ -66,6 +66,42 @@ export const openApiSpec = {
         properties: {
           error: { type: 'string' }
         }
+      },
+      LineupSlot: {
+        type: 'object',
+        properties: {
+          slot_id: { type: 'integer' },
+          slot: { type: 'string' },
+          count: { type: 'integer' },
+          eligible_positions: { type: 'array', items: { type: 'string' } },
+          type: { type: 'string', enum: ['START', 'FLEX', 'BENCH', 'IR'] }
+        }
+      },
+      Settings: {
+        type: 'object',
+        description: 'League settings. Existing fields are preserved; lineup_slots and raw roster settings are additive.',
+        properties: {
+          position_slot_counts: { type: 'object', additionalProperties: { type: 'integer' } },
+          lineup_slots: { type: 'array', items: { $ref: '#/components/schemas/LineupSlot' } },
+          _raw_roster_settings: { type: 'object', additionalProperties: true }
+        },
+        additionalProperties: true
+      },
+      RosterPlayer: {
+        type: 'object',
+        properties: {
+          player_id: { type: 'integer' },
+          name: { type: 'string' },
+          position: { type: 'string' },
+          projected_points: { type: 'number' },
+          total_points: { type: 'number' },
+          avg_points: { type: 'number' },
+          projected_avg_points: { type: 'number' },
+          pos_rank: { type: 'integer' },
+          acquisition_type: { type: 'string' },
+          on_bye_week: { type: 'boolean' }
+        },
+        additionalProperties: true
       }
     }
   },
@@ -120,7 +156,10 @@ export const openApiSpec = {
           { $ref: '#/components/parameters/swid' }
         ],
         responses: {
-          200: { description: 'Settings object' },
+          200: {
+            description: 'Settings object including derived lineup slots and raw roster settings.',
+            content: { 'application/json': { schema: { type: 'object', properties: { settings: { $ref: '#/components/schemas/Settings' } } } } }
+          },
           400: { description: 'Error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
         }
       }
@@ -168,7 +207,23 @@ export const openApiSpec = {
           { $ref: '#/components/parameters/week' }
         ],
         responses: {
-          200: { description: 'Team roster for week' },
+          200: {
+            description: 'Team roster for week, including projections, rankings, acquisition type, and bye-week status.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    week: { type: 'integer' },
+                    team_id: { type: 'integer' },
+                    team_name: { type: 'string' },
+                    roster: { type: 'array', items: { $ref: '#/components/schemas/RosterPlayer' } }
+                  },
+                  required: ['week', 'team_id', 'team_name', 'roster']
+                }
+              }
+            }
+          },
           400: { description: 'Error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
         }
       }
