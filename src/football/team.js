@@ -40,6 +40,13 @@ export class Team {
     this._fetchSchedule(schedule);
     this._fetchRoster(roster, year, kwargs.proSchedule);
     this.owners = kwargs.owners || [];
+    this.owner_names = this.owners.map((owner) => {
+      const fullName = [owner.firstName, owner.lastName]
+        .map((part) => (part || '').trim())
+        .filter(Boolean)
+        .join(' ');
+      return fullName || (owner.displayName || '').trim();
+    }).filter(Boolean);
 
     this.stats = {};
     const valuesByStat = data.valuesByStat || {};

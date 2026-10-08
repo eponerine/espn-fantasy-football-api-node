@@ -141,7 +141,7 @@ export const openApiSpec = {
           { $ref: '#/components/parameters/swid' }
         ],
         responses: {
-          200: { description: 'Standings list' },
+          200: { description: 'Standings list including owner_names (human names) and owners (matching ESPN member records), separate from team_name.' },
           400: { description: 'Error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
         }
       }
@@ -174,7 +174,7 @@ export const openApiSpec = {
           { $ref: '#/components/parameters/swid' }
         ],
         responses: {
-          200: { description: 'Teams list' },
+          200: { description: 'Teams list including owner_names (human names) and owners (matching ESPN member records), separate from team_name.' },
           400: { description: 'Error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
         }
       }

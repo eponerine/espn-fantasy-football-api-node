@@ -110,6 +110,8 @@ app.get('/standings', async (req, res) => {
     const standings = league.standings().map((team) => ({
       team_id: team.team_id,
       team_name: team.team_name,
+      owner_names: team.owner_names,
+      owners: team.owners,
       wins: team.wins,
       losses: team.losses,
       ties: team.ties,
@@ -138,6 +140,8 @@ app.get('/teams', async (req, res) => {
     const teams = league.teams.map((team) => ({
       team_id: team.team_id,
       team_name: team.team_name,
+      owner_names: team.owner_names,
+      owners: team.owners,
       team_abbrev: team.team_abbrev,
       wins: team.wins,
       losses: team.losses,
