@@ -83,12 +83,19 @@ const league = await FootballLeague.create({
 console.log(league.name);
 console.log(league.current_week);
 console.log(league.standings().map((team) => team.team_name));
+console.log(league.teams.map((team) => ({
+       team_name: team.team_name,
+       owner_names: team.owner_names,
+       owners: team.owners
+})));
 
 const week = await league.boxScores(league.current_week);
 const transactions = await league.transactions({ scoringPeriod: league.current_week });
 ```
 
 The factory fetches the league by default. The library also exports `Team`, `Matchup`, `Player`, and `BoxPlayer` for consumers that need the domain objects directly. Week arguments refer to ESPN scoring periods, not necessarily NFL calendar weeks; playoff and consolation matchups are still represented by the league's schedule data.
+
+Each team's `team_name` is its fantasy team name. `owners` retains the ESPN member records matched by the team's owner IDs, including support for co-managers. `owner_names` is a separate array of human names: trimmed `firstName` and `lastName` parts when available, otherwise `displayName`. A partial first or last name is retained. Nameless records remain in `owners` but are omitted from `owner_names`, so the arrays are not necessarily index-aligned. Unmatched owner IDs are ignored; missing owners or league members yield empty arrays. Matching owners retain league-member order.
 
 ## Routes
 
@@ -108,8 +115,8 @@ The route layer is intentionally boring: every endpoint is `GET`, every response
 | --- | --- | --- |
 | `GET /league` | None beyond league configuration | League name, ID, season, team count, and ESPN's current scoring period. This is a good first request when diagnosing configuration. |
 | `GET /settings` | None beyond league configuration | Scoring settings, playoff rules, waiver settings, roster settings, and `lineup_slots`. Each lineup slot includes its ESPN slot ID and eligible positions, so a FLEX or OP slot is not mistaken for a normal position. The raw roster settings are retained under `_raw_roster_settings`. |
-| `GET /teams` | None beyond league configuration | Team IDs, names, abbreviations, records, points for and against, and division information. Use this to resolve a human team name to the ID needed by `/roster`. |
-| `GET /standings` | None beyond league configuration | Current standings with wins, losses, ties, and points for. |
+| `GET /teams` | None beyond league configuration | Team IDs, fantasy team names, human `owner_names`, raw `owners` member records, abbreviations, records, points for and against, and division information. Use this to resolve a team or owner name to the ID needed by `/roster`. |
+| `GET /standings` | None beyond league configuration | Current standings with wins, losses, ties, points for, human `owner_names`, and raw `owners` member records. |
 | `GET /power-rankings?week=5` | Optional `week` | A schedule-aware power estimate. It combines dominance, score, and margin-of-victory signals; it is not the same thing as the official standings. The week defaults to ESPN's current week. |
 | `GET /draft` | None beyond league configuration | Draft picks with round, pick, player, bid amount, keeper status, and nominating/team information. |
 
@@ -157,7 +164,7 @@ The test suite uses Node's built-in test runner:
 npm test
 ```
 
-The tests cover the fantasy-specific helpers used for standings/tiebreaker ordering and ESPN roster-slot interpretation. The service has no build step; it runs plain ESM JavaScript directly from `src/`.
+The tests cover standings/tiebreaker helpers, ESPN roster-slot interpretation, and fixture-based team owner matching, name fallbacks, and HTTP owner fields. The service has no build step; it runs plain ESM JavaScript directly from `src/`.
 
 ## Deploy To Azure App Service
 
